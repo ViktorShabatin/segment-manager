@@ -1,0 +1,61 @@
+.rule-container {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.rule-field-select,
+.rule-value-select {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+.rule-field-select:hover,
+.rule-value-select:hover {
+    border-color: #888;
+}
+
+.rule-field-select:focus,
+.rule-value-select:focus {
+    border-color: #555;
+    box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+}
+
+.rule-option {
+    padding: 10px;
+    background-color: white;
+    color: #333;
+}
+
+.rule-remove-button,
+.rule-add-subgroup-button {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #FF7F7F;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.rule-remove-button:hover,
+.rule-add-subgroup-button:hover {
+    background-color: #FF7F7F;
+}
+
+.rule-add-subgroup-button {
+    background-color: #B2E0B2;
+}
+
+.rule-add-subgroup-button:hover {
+    background-color: #87CEEB;
+}

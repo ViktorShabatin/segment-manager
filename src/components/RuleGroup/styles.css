@@ -1,0 +1,46 @@
+.rule-group-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+}
+
+.rule-group-rule {
+    margin-bottom: 10px;
+}
+
+.rule-group-subgroup {
+    margin-left: 20px;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+}
+
+.rule-group-buttons-container {
+    display: flex;
+    width: inherit;
+    justify-content: space-between;
+}
+
+.rule-group-add-rule-button,
+.rule-group-remove-button {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #87CEEB;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.rule-group-add-rule-button:hover,
+.rule-group-remove-button:hover {
+    background-color: #87CEEB;
+}
+
+.rule-group-remove-button {
+    background-color: #ff4d4d;
+}
+
+.rule-group-remove-button:hover {
+    background-color: #ff1a1a;
+}

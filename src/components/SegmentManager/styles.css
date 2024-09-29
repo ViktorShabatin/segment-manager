@@ -1,0 +1,39 @@
+.rule-builder-container {
+    border-radius: 4px;
+    min-width: 1280px;
+}
+
+.rule-builder-buttons-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.rule-builder-button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-group-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.add-group-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+.submit-button {
+    background-color: #2196F3;
+    color: white;
+}
+
+.submit-button:hover {
+    background-color: #1e88e5;
+    transform: scale(1.05);
+}
