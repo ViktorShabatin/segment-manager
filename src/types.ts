@@ -1,17 +1,14 @@
-export type Operator = 'AND' | 'OR' | null;
+import {
+  RuleComponentType,
+  RuleType,
+} from './components/Rule/strategies/types.ts';
 
-export interface Rule {
-  _id: string;
-  field: string;
-  value: string;
-  operator: Operator;
-  subGroups: RuleGroup[];
-}
+export type Operator = 'AND' | 'OR' | null;
 
 export interface RuleGroup {
   _id: string;
   operator: Operator;
-  rules: Rule[];
+  rules: RuleComponentType[];
 }
 
 export interface ISelectOptionItem {
@@ -21,5 +18,6 @@ export interface ISelectOptionItem {
 
 export interface IDynamicRuleItem {
   ruleName: string;
+  type: RuleType;
   rules: ISelectOptionItem[];
 }

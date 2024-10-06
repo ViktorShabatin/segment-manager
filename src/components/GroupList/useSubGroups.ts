@@ -22,7 +22,7 @@ export default (group: RuleGroup, onChange: (group: RuleGroup) => void) => {
       const rule = updatedRules.find((rule) => rule._id === ruleId);
 
       if (rule) {
-        rule.subGroups.push(newSubGroup);
+        rule.subGroups?.push(newSubGroup);
         onChange({ ...group, rules: updatedRules });
       }
     },

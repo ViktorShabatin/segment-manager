@@ -1,24 +1,20 @@
-import { ChangeEvent, memo } from 'react';
-import { ISelectOptionItem, Operator, RuleGroup } from '../../types.ts';
+import { ChangeEvent, memo, useCallback, useMemo } from 'react';
+import { IDynamicRuleItem } from '../../types.ts';
+import useStrategy from './strategies/useStrategy.ts';
+import { ExtendedInputRule } from './strategies/ExtendedInputRenderStrategy/ExtendedInputRenderStrategy.tsx';
+import { SelectRule } from './strategies/SelectRenderStrategy/SelectRenderStrategy.tsx';
+import { CheckboxRule } from './strategies/CheckboxRenderStrategy/CheckboxRenderStrategy.tsx';
+import RuleTypeSelector from './components/RuleTypeSelector/RuleTypeSelector.tsx';
+import { RuleComponentType } from './strategies/types.ts';
+import { InputRule } from './strategies/InputRenderStrategy/InputRenderStrategy.tsx';
 
 import './styles.css';
 
-type RuleOption = {
-  ruleName: string;
-  rules: ISelectOptionItem[];
-};
-
 interface RuleProps {
-  rule: {
-    _id: string;
-    field: string;
-    value: string;
-    operator: Operator;
-    subGroups: RuleGroup[];
-  };
-  onChange: (updatedRule: any) => void;
+  rule: RuleComponentType;
+  onChange: (updatedRule: RuleComponentType) => void;
   onRemove: (ruleId: string) => void;
-  availableRules: RuleOption[];
+  availableRules: IDynamicRuleItem[];
   onAddSubGroup: (ruleId: string) => void;
   isRemovable: boolean;
   isSubGroup: boolean;
@@ -33,62 +29,77 @@ const Rule = ({
   isRemovable,
   isSubGroup,
 }: RuleProps) => {
-  const handleFieldChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const selectedField = e.target.value;
-    const selectedRule = availableRules.find(
-      (r) => r.ruleName === selectedField
-    );
-    onChange({
-      ...rule,
-      field: selectedField,
-      value: selectedRule ? selectedRule.rules[0].value : '',
-    });
-  };
+  const { getStrategy } = useStrategy();
 
-  const handleValueChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    onChange({ ...rule, value: e.target.value });
-  };
+  const handleRuleTypeChange = useCallback(
+    (e: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+      const selectedField: string = e.target.value;
 
-  const currentRuleOptions = availableRules.find(
-    (r) => r.ruleName === rule.field
+      const selectedRule: IDynamicRuleItem | undefined = availableRules.find(
+        (r) => r.ruleName === selectedField
+      );
+
+      if (!selectedRule) return;
+
+      const commonProps = { ...rule, field: selectedField };
+      let updatedRule;
+
+      switch (selectedRule.type) {
+        case 'input':
+          updatedRule = { ...commonProps, value: '' } as InputRule;
+          break;
+        case 'extendedInput':
+          updatedRule = {
+            ...commonProps,
+            condition:
+              selectedRule.rules.length > 0 ? selectedRule.rules[0].value : '',
+            value: '',
+          } as ExtendedInputRule;
+          break;
+        case 'select':
+          updatedRule = {
+            ...commonProps,
+            value:
+              selectedRule.rules.length > 0 ? selectedRule.rules[0].value : '',
+          } as SelectRule;
+          break;
+        case 'checkbox':
+          updatedRule = {
+            ...commonProps,
+            value: Boolean((e.target as HTMLInputElement).checked),
+          } as CheckboxRule;
+          break;
+        default:
+          return;
+      }
+
+      onChange(updatedRule);
+    },
+    [availableRules, rule, onChange]
   );
+
+  const currentRuleOptions = useMemo(() => {
+    return availableRules.find((r) => r.ruleName === rule.field) || null;
+  }, [rule]);
+
+  const StrategyComponent = currentRuleOptions
+    ? getStrategy(currentRuleOptions.type)
+    : null;
 
   return (
     <div className="rule-container">
-      <select
-        className="rule-field-select"
-        value={rule.field}
-        onChange={handleFieldChange}
-      >
-        <option className="rule-option" value="">
-          Select Rule
-        </option>
-        {availableRules.map((r) => (
-          <option className="rule-option" key={r.ruleName} value={r.ruleName}>
-            {r.ruleName}
-          </option>
-        ))}
-      </select>
+      <RuleTypeSelector
+        field={rule.field}
+        availableRules={availableRules}
+        onChange={handleRuleTypeChange}
+      />
 
-      {currentRuleOptions && (
-        <select
-          className="rule-value-select"
-          value={rule.value}
-          onChange={handleValueChange}
-        >
-          <option className="rule-option" value="">
-            Select Condition
-          </option>
-          {currentRuleOptions.rules.map((option) => (
-            <option
-              className="rule-option"
-              key={option.value}
-              value={option.value}
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
+      {StrategyComponent && (
+        <StrategyComponent
+          rule={rule}
+          onChange={onChange}
+          options={currentRuleOptions?.rules}
+        />
       )}
 
       {isRemovable && (
@@ -100,7 +111,7 @@ const Rule = ({
         </button>
       )}
 
-      {!isSubGroup && rule.operator === 'AND' && (
+      {!isSubGroup && (rule.operator === 'AND' || rule.operator === null) && (
         <button
           className="rule-add-subgroup-button"
           onClick={() => onAddSubGroup(rule._id)}

@@ -5,7 +5,8 @@
 }
 
 .rule-field-select,
-.rule-value-select {
+.rule-value-select,
+.rule-value-input {
     padding: 8px;
     font-size: 16px;
     border: 1px solid #ccc;
@@ -16,6 +17,13 @@
     outline: none;
     transition: all 0.3s ease;
     min-width: 200px;
+}
+
+.rule-operator-field-select,
+.rule-operator-value-select {
+    min-width: 40px;
+    width: 120px;
+    margin-right: 10px;
 }
 
 .rule-field-select:hover,

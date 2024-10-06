@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import OperatorSelector from '../OperatorSelector/OperatorSelector';
 import Rule from '../Rule/Rule';
-import { RuleGroup as RuleGroupType } from '../../types.ts';
+import { IDynamicRuleItem, RuleGroup as RuleGroupType } from '../../types.ts';
 import useRule from '../Rule/useRule.ts';
 import useSubGroups from '../GroupList/useSubGroups.ts';
 
@@ -11,10 +11,7 @@ interface RuleGroupProps {
   group: RuleGroupType;
   onChange: (updatedGroup: RuleGroupType) => void;
   onRemove: (groupId: string) => void;
-  availableRules: {
-    ruleName: string;
-    rules: { value: string; label: string }[];
-  }[];
+  availableRules: IDynamicRuleItem[];
   isRemovable: boolean;
   isSubGroup: boolean;
 }
@@ -57,35 +54,39 @@ const RuleGroup = ({
             isSubGroup={isSubGroup}
           />
 
-          {rule.subGroups.map((subGroup, subGroupIndex) => (
-            <div className="rule-group-subgroup" key={subGroup._id}>
-              {subGroupIndex > 0 && (
-                <OperatorSelector
-                  value={subGroup.operator}
-                  onChange={(operator) =>
-                    handleSubGroupChange(ruleIndex, subGroupIndex, {
-                      ...subGroup,
-                      operator,
-                    })
-                  }
-                />
-              )}
-              <RuleGroup
-                group={subGroup}
-                availableRules={availableRules}
-                onChange={(updatedSubGroup) =>
-                  handleSubGroupChange(
-                    ruleIndex,
-                    subGroupIndex,
-                    updatedSubGroup
-                  )
-                }
-                onRemove={() => handleRemoveSubGroup(ruleIndex, subGroupIndex)}
-                isRemovable
-                isSubGroup
-              />
-            </div>
-          ))}
+          {rule.subGroups?.length > 0
+            ? rule.subGroups?.map((subGroup, subGroupIndex) => (
+                <div className="rule-group-subgroup" key={subGroup._id}>
+                  {subGroupIndex > 0 && (
+                    <OperatorSelector
+                      value={subGroup.operator || 'AND'}
+                      onChange={(operator) =>
+                        handleSubGroupChange(ruleIndex, subGroupIndex, {
+                          ...subGroup,
+                          operator,
+                        })
+                      }
+                    />
+                  )}
+                  <RuleGroup
+                    group={subGroup}
+                    availableRules={availableRules}
+                    onChange={(updatedSubGroup) =>
+                      handleSubGroupChange(
+                        ruleIndex,
+                        subGroupIndex,
+                        updatedSubGroup
+                      )
+                    }
+                    onRemove={() =>
+                      handleRemoveSubGroup(ruleIndex, subGroupIndex)
+                    }
+                    isRemovable
+                    isSubGroup
+                  />
+                </div>
+              ))
+            : null}
         </div>
       ))}
       <div className="rule-group-buttons-container">

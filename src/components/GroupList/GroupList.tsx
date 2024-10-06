@@ -23,7 +23,7 @@ export const GroupList = ({ availableRules, handleSubmit }: IProps) => {
         <div key={group._id}>
           {index > 0 && (
             <OperatorSelector
-              value={group.operator}
+              value={group.operator || 'AND'}
               onChange={(operator) => handleOperatorChange(group._id, operator)}
             />
           )}

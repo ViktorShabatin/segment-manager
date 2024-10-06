@@ -41,7 +41,7 @@ export default () => {
           updatedGroups[groupIndex] = {
             ...updatedGroups[groupIndex],
             operator,
-          };
+          } as RuleGroupType;
         }
 
         return updatedGroups;

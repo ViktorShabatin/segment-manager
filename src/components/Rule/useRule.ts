@@ -1,10 +1,10 @@
-import { Operator, Rule as RuleType, RuleGroup } from '../../types.ts';
-import { v4 as uuidv4 } from 'uuid';
 import { useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { Operator, RuleComponentType, RuleGroup } from '../../types.ts';
 
 export default (group: RuleGroup, onChange: (group: RuleGroup) => void) => {
   const handleAddRule = () => {
-    const newRule: RuleType = {
+    const newRule: RuleComponentType = {
       _id: uuidv4(),
       field: '',
       value: '',
@@ -15,7 +15,7 @@ export default (group: RuleGroup, onChange: (group: RuleGroup) => void) => {
   };
 
   const handleRuleChange = useCallback(
-    (updatedRule: RuleType) => {
+    (updatedRule: RuleComponentType) => {
       const updatedRules = [...group.rules];
       const ruleIndex = updatedRules.findIndex(
         (rule) => rule._id === updatedRule._id

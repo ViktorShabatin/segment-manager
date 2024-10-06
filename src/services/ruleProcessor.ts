@@ -1,8 +1,17 @@
 import { RuleGroup } from '../types.ts';
 
 export class RuleProcessor {
-  processGroups(groups: RuleGroup[]) {
-    return this.convertFullRulesToString({ groups });
+  processGroups(groups: RuleGroup[]): string {
+    console.log('example: ', this.convertFullRulesToString({ groups }));
+    return JSON.stringify(this.convertGroupsToJSON(groups), null, 2);
+  }
+
+  private convertRuleToString(
+    rule: any,
+    isBooleanValue: boolean = false
+  ): string {
+    const conditionSymbol = rule.condition ? ` ${rule.condition} ` : ' ';
+    return `${rule.field}${conditionSymbol}${isBooleanValue ? '= ' : ''}${rule.value}`;
   }
 
   private convertGroupToString(group: RuleGroup): string {
@@ -22,11 +31,12 @@ export class RuleProcessor {
       );
 
       if (rule.subGroups && rule.subGroups.length > 0) {
-        result += `(${rule.field} ${rule.value} ${rule.operator} (${rule.subGroups
+        const subGroupString = rule.subGroups
           .map((subGroup) => this.convertGroupToString(subGroup))
-          .join(` ${rule.operator} `)}))`;
+          .join(` ${rule.operator || 'AND'} `);
+        result += `(${this.convertRuleToString(rule)} AND (${subGroupString}))`;
       } else {
-        result += `${rule.field} ${isBooleanValue ? '= ' : ''}${rule.value}`;
+        result += this.convertRuleToString(rule, isBooleanValue);
       }
     });
 
@@ -43,6 +53,48 @@ export class RuleProcessor {
         result += ` ${group.operator} `;
       }
       result += `(${this.convertGroupToString(group)})`;
+    });
+
+    return result;
+  }
+
+  private convertGroupsToJSON(groups: RuleGroup[]): any {
+    const result: any = {
+      operator: 'AND',
+      groups: [],
+    };
+
+    groups.forEach((group) => {
+      const groupObject: any = {
+        operator: group.operator || 'AND',
+        rules: [],
+      };
+
+      group.rules.forEach((rule) => {
+        if (rule.subGroups && rule.subGroups.length > 0) {
+          const subGroupObject = {
+            operator: rule.operator || 'AND',
+            rules: this.convertGroupsToJSON(rule.subGroups).groups,
+          };
+          groupObject.rules.push(subGroupObject);
+        } else {
+          const ruleObject = {
+            field: rule.field,
+            condition: rule.condition || '=',
+            value: rule.value,
+          };
+          if (rule.operator) {
+            groupObject.rules.push({
+              operator: rule.operator,
+              rules: [ruleObject],
+            });
+          } else {
+            groupObject.rules.push(ruleObject);
+          }
+        }
+      });
+
+      result.groups.push(groupObject);
     });
 
     return result;

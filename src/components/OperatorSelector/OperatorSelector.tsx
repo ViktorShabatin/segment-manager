@@ -3,19 +3,17 @@ import { Operator } from '../../types.ts';
 
 import './styles.css';
 
-type NotNullableOperator = NonNullable<Operator>;
-
 interface OperatorSelectorProps {
-  value: NotNullableOperator;
-  onChange: (operator: NotNullableOperator) => void;
+  value: Operator;
+  onChange: (operator: Operator) => void;
 }
 
 const OperatorSelector: FC<OperatorSelectorProps> = ({ value, onChange }) => (
   <div className="operator-container">
     <select
       className="operator-select"
-      value={value}
-      onChange={(e) => onChange(e.target.value as NotNullableOperator)}
+      value={value as string}
+      onChange={(e) => onChange(e.target.value as Operator)}
     >
       <option className="operator-option" value="AND">
         AND
